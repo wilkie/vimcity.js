@@ -1,0 +1,5 @@
+{
+  "name": "lib-vimcity",
+  "version": "0.1.0",
+  "main": "./dist/vimcity.min.js"
+}

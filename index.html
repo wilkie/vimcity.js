@@ -1,0 +1,35 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <title>VimCity</title>
+    <link href="vendor/term_styles.css" rel="stylesheet" type="text/css">
+    <link href="dist/main.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="vimcity"></div>
+    <div class="instructions">
+      <p>
+        Use
+        <span class='key'>h</span>,
+        <span class='key'>j</span>,
+        <span class='key'>k</span>,
+        <span class='key'>l</span>
+        to move around.
+
+        Press
+        <span class='key'>i</span>
+        to go into building insert mode.
+      </p>
+    </div>
+    Uses these open source tools:
+    <ul>
+    </ul>
+    <script type="text/javascript" src="dist/vimcity.js"></script>
+    <script type="text/javascript">
+      vim = new VimCity({
+        selector: '#vimcity'
+      });
+      vim.run();
+    </script>
+  </body>
+</html>
