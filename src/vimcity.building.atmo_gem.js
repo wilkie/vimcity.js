@@ -5,8 +5,8 @@ function initVimCityBuildingAtmoGen(context) {
 
   VimCity.Building.AtmoGen = function() {
     VimCity.Building.call(this, {
-      symbol:           ['o|o',
-                         '|o|'],
+      symbol:           ['{blue}o{gray}|{blue}o',
+                         '{gray}|{blue}o{gray}|'],
       name:             "AtmoGen",
       height:           2,
       width:            3,

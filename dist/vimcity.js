@@ -77,10 +77,12 @@ function initVimCityCore (context) {
 
     var atmo_gen = new VimCity.Building.AtmoGen();
     var starport = new VimCity.Building.Starport();
+    var farm     = new VimCity.Building.Farm();
     this.world.add_building(atmo_gen, 3, 3);
     this.world.destroy_building(4, 4);
     this.world.add_building(atmo_gen, 3, 3);
     this.world.add_building(starport, 8, 4);
+    this.world.add_building(farm, 18, 4);
     this.viewport.draw();
 
     return this;
@@ -106,8 +108,8 @@ function initVimCityBuildingAtmoGen(context) {
 
   VimCity.Building.AtmoGen = function() {
     VimCity.Building.call(this, {
-      symbol:           ['o|o',
-                         '|o|'],
+      symbol:           ['{blue}o{gray}|{blue}o',
+                         '{gray}|{blue}o{gray}|'],
       name:             "AtmoGen",
       height:           2,
       width:            3,
@@ -135,9 +137,9 @@ function initVimCityBuildingFarm(context) {
 
   VimCity.Building.Farm = function() {
     VimCity.Building.call(this, {
-      symbol:           ['~~~~V~',
-                         '~V~~~ ',
-                         '~v~~V~'],
+      symbol:           ['{magenta}~~~~{green}V{magenta}~',
+                         '{magenta}~{green}V{magenta}~~~ ',
+                         '{magenta}~{green}v{magenta}~~{green}V{magenta}~'],
       name:             "Farm",
       height:           3,
       width:            6,
@@ -173,6 +175,36 @@ function initVimCityBuilding (context) {
     this.workers_required = options.workers_required;
     this.description      = options.description;
     this.bonuses          = options.bonuses;
+
+    // Spawn building character and color sheets
+    var y = 0;
+    var x = 0;
+
+    // Default color
+    var color = 'white';
+
+    this.symbol_color = new Array(this.height);
+    this.symbol_char  = new Array(this.height);
+    for(var i = 0; i < this.height; i++) {
+      this.symbol_color[i] = new Array(this.width);
+      this.symbol_char[i]  = new Array(this.width);
+      for(var j = 0; j < this.width; j++) {
+        // Read color
+        while(options.symbol[y][x] == '{') {
+          var end_index = options.symbol[y].indexOf("}", x);
+          color = options.symbol[y].substring(x+1, end_index);
+          x = end_index+1;
+        }
+
+        // Output symbol and color
+        this.symbol_color[i][j] = color;
+        this.symbol_char[i][j]  = options.symbol[y][x];
+
+        x++;
+      }
+      x = 0;
+      y++;
+    }
   };
 
   VimCity.Building.prototype.add_to_city = function(city) {
@@ -230,7 +262,7 @@ function initVimCityBuildingStarport(context) {
   VimCity.Building.Starport = function() {
     VimCity.Building.call(this, {
       symbol:           ['\\ /',
-                         ' = ',
+                         ' {red}={white} ',
                          '/ \\'],
       name:             "Starport",
       height:           3,
@@ -304,6 +336,9 @@ var initVimCity = function (context) {
   // Initialize Core
   initVimCityCore(context);
 
+  // Initialize Options
+  initVimCityOptions(context);
+
   // Initialize Viewport
   initVimCityViewport(context);
 
@@ -332,6 +367,24 @@ if (typeof define === 'function' && define.amd) {
   // Load VimCity normally (creating a VimCity global) if not using an AMD
   // loader.
   initVimCity(this);
+}
+
+function initVimCityOptions(context) {
+  'use strict';
+
+  var VimCity = context.VimCity;
+
+  // This character is used when trying to render outside of world map
+  VimCity.OUT_BOUNDS_CHAR = 'x'
+
+  // This character is used when world map tile is empty
+  VimCity.EMPTY_CHAR      = ' ';
+
+  // Grid is rendered in some empty spaces within world map
+  VimCity.GRID_CHAR       = '.';
+  VimCity.GRID_COLOR      = '#880000';
+  VimCity.GRID_WIDTH      = 4;
+  VimCity.GRID_HEIGHT     = 2;
 }
 
 function initVimCityViewport(context) {
@@ -423,14 +476,34 @@ function initVimCityViewport(context) {
   VimCity.Viewport.prototype.draw = function() {
     for (var i = 0; i < this.height; i++) {
       for (var j = 0; j < this.width; j++) {
-        if ((i+this.y >= this.world.height) ||
-            (j+this.x >= this.world.width)  ||
-            (i+this.y < 0) ||
-            (j+this.x < 0)) {
-          this.grid[i][j].innerHTML = '';
+        var world_y = i + this.y;
+        var world_x = j + this.x;
+
+        if ((world_y >= this.world.height) ||
+            (world_x >= this.world.width)  ||
+            (world_y < 0) ||
+            (world_x < 0)) {
+          this.grid[i][j].style.color = 'red';
+          this.grid[i][j].innerHTML   = VimCity.OUT_BOUNDS_CHAR;
         }
         else {
-          this.grid[i][j].innerHTML = this.world.grid[i+this.y][j+this.x];
+          var tile = this.world.grid[world_y][world_x];
+
+          if (tile.chr == '') {
+            this.grid[i][j].style.color = VimCity.GRID_COLOR;
+
+            if ((world_y % VimCity.GRID_HEIGHT == 0) &&
+                (world_x % VimCity.GRID_WIDTH  == 0)) {
+              this.grid[i][j].innerHTML   = VimCity.GRID_CHAR;
+            }
+            else {
+              this.grid[i][j].innerHTML   = VimCity.EMPTY_CHAR;
+            }
+          }
+          else {
+            this.grid[i][j].style.color = tile.color;
+            this.grid[i][j].innerHTML   = tile.chr;
+          }
         }
       }
     }
@@ -456,7 +529,10 @@ function initVimCityWorld(context) {
       for (var x = 0; x < this.width; x++) {
         // Build tile
         this.building_map[y][x] = [0, 0, null];
-        this.grid[y][x]         = ' ';
+        this.grid[y][x]         = {
+          color: 'white',
+          chr:   ''
+        };
       }
     }
   };
@@ -493,7 +569,10 @@ function initVimCityWorld(context) {
 
     for(var i = y; i < this.height && i < y + building.height; i++) {
       for(var j = x; j < this.width && j < x + building.width; j++) {
-        this.grid[i][j]         = building.symbol[i-y][j-x];
+        this.grid[i][j]         = {
+          color: building.symbol_color[i-y][j-x],
+          chr:   building.symbol_char[i-y][j-x]
+        };
         this.building_map[i][j] = [y, x, building];
       }
     }
@@ -517,7 +596,10 @@ function initVimCityWorld(context) {
     // Destroy building at x,y
     for(var i = y; i < this.height && i < y + building.height; i++) {
       for(var j = x; j < this.width && j < x + building.width; j++) {
-        this.grid[i][j]         = " ";
+        this.grid[i][j]         = {
+          color: 'white',
+          chr: ''
+        };
         this.building_map[i][j] = [0, 0, null];
       }
     }

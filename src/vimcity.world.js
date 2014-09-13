@@ -17,7 +17,10 @@ function initVimCityWorld(context) {
       for (var x = 0; x < this.width; x++) {
         // Build tile
         this.building_map[y][x] = [0, 0, null];
-        this.grid[y][x]         = ' ';
+        this.grid[y][x]         = {
+          color: 'white',
+          chr:   ''
+        };
       }
     }
   };
@@ -54,7 +57,10 @@ function initVimCityWorld(context) {
 
     for(var i = y; i < this.height && i < y + building.height; i++) {
       for(var j = x; j < this.width && j < x + building.width; j++) {
-        this.grid[i][j]         = building.symbol[i-y][j-x];
+        this.grid[i][j]         = {
+          color: building.symbol_color[i-y][j-x],
+          chr:   building.symbol_char[i-y][j-x]
+        };
         this.building_map[i][j] = [y, x, building];
       }
     }
@@ -78,7 +84,10 @@ function initVimCityWorld(context) {
     // Destroy building at x,y
     for(var i = y; i < this.height && i < y + building.height; i++) {
       for(var j = x; j < this.width && j < x + building.width; j++) {
-        this.grid[i][j]         = " ";
+        this.grid[i][j]         = {
+          color: 'white',
+          chr: ''
+        };
         this.building_map[i][j] = [0, 0, null];
       }
     }

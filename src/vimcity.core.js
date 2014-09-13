@@ -74,10 +74,12 @@ function initVimCityCore (context) {
 
     var atmo_gen = new VimCity.Building.AtmoGen();
     var starport = new VimCity.Building.Starport();
+    var farm     = new VimCity.Building.Farm();
     this.world.add_building(atmo_gen, 3, 3);
     this.world.destroy_building(4, 4);
     this.world.add_building(atmo_gen, 3, 3);
     this.world.add_building(starport, 8, 4);
+    this.world.add_building(farm, 18, 4);
     this.viewport.draw();
 
     return this;

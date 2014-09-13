@@ -6,7 +6,7 @@ function initVimCityBuildingStarport(context) {
   VimCity.Building.Starport = function() {
     VimCity.Building.call(this, {
       symbol:           ['\\ /',
-                         ' = ',
+                         ' {red}={white} ',
                          '/ \\'],
       name:             "Starport",
       height:           3,

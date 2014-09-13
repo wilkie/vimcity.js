@@ -2,6 +2,9 @@ var initVimCity = function (context) {
   // Initialize Core
   initVimCityCore(context);
 
+  // Initialize Options
+  initVimCityOptions(context);
+
   // Initialize Viewport
   initVimCityViewport(context);
 

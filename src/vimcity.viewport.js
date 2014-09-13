@@ -87,14 +87,34 @@ function initVimCityViewport(context) {
   VimCity.Viewport.prototype.draw = function() {
     for (var i = 0; i < this.height; i++) {
       for (var j = 0; j < this.width; j++) {
-        if ((i+this.y >= this.world.height) ||
-            (j+this.x >= this.world.width)  ||
-            (i+this.y < 0) ||
-            (j+this.x < 0)) {
-          this.grid[i][j].innerHTML = '';
+        var world_y = i + this.y;
+        var world_x = j + this.x;
+
+        if ((world_y >= this.world.height) ||
+            (world_x >= this.world.width)  ||
+            (world_y < 0) ||
+            (world_x < 0)) {
+          this.grid[i][j].style.color = 'red';
+          this.grid[i][j].innerHTML   = VimCity.OUT_BOUNDS_CHAR;
         }
         else {
-          this.grid[i][j].innerHTML = this.world.grid[i+this.y][j+this.x];
+          var tile = this.world.grid[world_y][world_x];
+
+          if (tile.chr == '') {
+            this.grid[i][j].style.color = VimCity.GRID_COLOR;
+
+            if ((world_y % VimCity.GRID_HEIGHT == 0) &&
+                (world_x % VimCity.GRID_WIDTH  == 0)) {
+              this.grid[i][j].innerHTML   = VimCity.GRID_CHAR;
+            }
+            else {
+              this.grid[i][j].innerHTML   = VimCity.EMPTY_CHAR;
+            }
+          }
+          else {
+            this.grid[i][j].style.color = tile.color;
+            this.grid[i][j].innerHTML   = tile.chr;
+          }
         }
       }
     }

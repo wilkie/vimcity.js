@@ -5,9 +5,9 @@ function initVimCityBuildingFarm(context) {
 
   VimCity.Building.Farm = function() {
     VimCity.Building.call(this, {
-      symbol:           ['~~~~V~',
-                         '~V~~~ ',
-                         '~v~~V~'],
+      symbol:           ['{magenta}~~~~{green}V{magenta}~',
+                         '{magenta}~{green}V{magenta}~~~ ',
+                         '{magenta}~{green}v{magenta}~~{green}V{magenta}~'],
       name:             "Farm",
       height:           3,
       width:            6,
