@@ -4,28 +4,9 @@
 /*jslint browser: true*/
 /*global $*/
 
-// Compiler directive for UglifyJS.  See occamViz.const.js for more info.
 if (typeof DEBUG === 'undefined') {
   DEBUG = true;
 }
-
-// LIBRARY-GLOBAL CONSTANTS
-//
-// These constants are exposed to all library modules.
-
-// GLOBAL is a reference to the global Object.
-var Fn = Function, GLOBAL = new Fn('return this')();
-
-// LIBRARY-GLOBAL METHODS
-//
-// The methods here are exposed to all library modules.  Because all of the
-// source files are wrapped within a closure at build time, they are not
-// exposed globally in the distributable binaries.
-
-/**
- * A no-op function.  Useful for passing around as a default callback.
- */
-function noop () { }
 
 /**
  * Init wrapper for the core module.
@@ -89,6 +70,7 @@ function initVimCityCore (context) {
   };
 
   VimCity.prototype.run = function() {
+    // Set up game timer
   };
 
   // DEBUG CODE
